@@ -1,0 +1,26 @@
+{
+  "name": "tree-helper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/tree-helper.common.js",
+  "module": "dist/tree-helper.esm.js",
+  "scripts": {
+    "build": "node build/build.js"
+  },
+  "author": "phphe <phphe@outlook.com> (https://github.com/phphe)",
+  "unpkg": "dist/tree-helper.js",
+  "bugs": {
+    "url": "https://github.com/phphe/tree-helper/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phphe/tree-helper.git"
+  },
+  "devDependencies": {
+    "rollup-helper": "^1.0.3"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "helper-js": "^1.0.3"
+  }
+}
