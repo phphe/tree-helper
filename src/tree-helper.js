@@ -48,6 +48,11 @@ function _changeParent(item, parent, childrenKey = 'children', parentKey = 'pare
   }
   item[parentKey] = parent
 }
+
+export function getTreeDataFromFlat(data, idKey, parentIdKey) {
+  data.forEach(item => (item.children = data.filter(v => v[parentIdKey] === item[idKey])))
+  return data.filter(item => item[parentIdKey] == null)
+}
 export function insertBefore(item, target, childrenKey = 'children', parentKey = 'parent') {
   const sibilings = target[parentKey][childrenKey]
   const index = sibilings.indexOf(target)

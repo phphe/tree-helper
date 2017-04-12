@@ -1,5 +1,5 @@
 /*!
- * tree-helper v1.0.0
+ * tree-helper v1.0.1
  * phphe <phphe@outlook.com> (https://github.com/phphe)
  * https://github.com/phphe/tree-helper.git
  * Released under the MIT License.
@@ -172,6 +172,17 @@ function _changeParent(item, parent) {
   }
   item[parentKey] = parent;
 }
+
+function getTreeDataFromFlat(data, idKey, parentIdKey) {
+  data.forEach(function (item) {
+    return item.children = data.filter(function (v) {
+      return v[parentIdKey] === item[idKey];
+    });
+  });
+  return data.filter(function (item) {
+    return item[parentIdKey] == null;
+  });
+}
 function insertBefore(item, target) {
   var childrenKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'children';
   var parentKey = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'parent';
@@ -219,6 +230,7 @@ function appendTo(item, target) {
 
 exports.clone = clone;
 exports.forIn = forIn;
+exports.getTreeDataFromFlat = getTreeDataFromFlat;
 exports.insertBefore = insertBefore;
 exports.insertAfter = insertAfter;
 exports.prependTo = prependTo;
