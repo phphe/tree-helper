@@ -42,6 +42,9 @@ export function forIn(obj, handler, childrenKey = 'children') {
   return obj
 }
 function _changeParent(item, parent, childrenKey = 'children', parentKey = 'parent') {
+  if (item[parentKey] === parent) {
+    return
+  }
   // remove item from original list
   if (item[parentKey]) {
     arrayRemove(item[parentKey][childrenKey], item)
@@ -54,6 +57,9 @@ export function getTreeDataFromFlat(data, idKey, parentIdKey) {
   return data.filter(item => item[parentIdKey] == null)
 }
 export function insertBefore(item, target, childrenKey = 'children', parentKey = 'parent') {
+  if (item === target) {
+    return
+  }
   const sibilings = target[parentKey][childrenKey]
   const index = sibilings.indexOf(target)
   if (sibilings[index - 1] !== item) {
@@ -62,6 +68,9 @@ export function insertBefore(item, target, childrenKey = 'children', parentKey =
   }
 }
 export function insertAfter(item, target, childrenKey = 'children', parentKey = 'parent') {
+  if (item === target) {
+    return
+  }
   const targetParent = target[parentKey]
   const sibilings = targetParent[childrenKey]
   const index = sibilings.indexOf(target)
@@ -71,6 +80,9 @@ export function insertAfter(item, target, childrenKey = 'children', parentKey = 
   }
 }
 export function prependTo(item, target, childrenKey = 'children', parentKey = 'parent') {
+  if (item === target) {
+    throw `can't prepend to self`
+  }
   const targetChildren = target[childrenKey]
   if (targetChildren[0] !== item) {
     _changeParent(item, target)
@@ -78,6 +90,9 @@ export function prependTo(item, target, childrenKey = 'children', parentKey = 'p
   }
 }
 export function appendTo(item, target, childrenKey = 'children', parentKey = 'parent') {
+  if (item === target) {
+    throw `can't append to self`
+  }
   const targetChildren = target[childrenKey]
   const targetChildrenLast = targetChildren[ targetChildren.length - 1 ]
   if (targetChildrenLast !== item) {

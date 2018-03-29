@@ -1,5 +1,5 @@
 /*!
- * tree-helper v1.0.1
+ * tree-helper v1.0.3
  * phphe <phphe@outlook.com> (https://github.com/phphe)
  * https://github.com/phphe/tree-helper.git
  * Released under the MIT License.
@@ -58,6 +58,9 @@ function _changeParent(item, parent) {
   var childrenKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'children';
   var parentKey = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'parent';
 
+  if (item[parentKey] === parent) {
+    return;
+  }
   // remove item from original list
   if (item[parentKey]) {
     arrayRemove(item[parentKey][childrenKey], item);
@@ -79,6 +82,9 @@ function insertBefore(item, target) {
   var childrenKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'children';
   var parentKey = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'parent';
 
+  if (item === target) {
+    return;
+  }
   var sibilings = target[parentKey][childrenKey];
   var index = sibilings.indexOf(target);
   if (sibilings[index - 1] !== item) {
@@ -90,6 +96,9 @@ function insertAfter(item, target) {
   var childrenKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'children';
   var parentKey = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'parent';
 
+  if (item === target) {
+    return;
+  }
   var targetParent = target[parentKey];
   var sibilings = targetParent[childrenKey];
   var index = sibilings.indexOf(target);
@@ -102,6 +111,9 @@ function prependTo(item, target) {
   var childrenKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'children';
   var parentKey = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'parent';
 
+  if (item === target) {
+    throw 'can\'t prepend to self';
+  }
   var targetChildren = target[childrenKey];
   if (targetChildren[0] !== item) {
     _changeParent(item, target);
@@ -112,6 +124,9 @@ function appendTo(item, target) {
   var childrenKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'children';
   var parentKey = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'parent';
 
+  if (item === target) {
+    throw 'can\'t append to self';
+  }
   var targetChildren = target[childrenKey];
   var targetChildrenLast = targetChildren[targetChildren.length - 1];
   if (targetChildrenLast !== item) {
