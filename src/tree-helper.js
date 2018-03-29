@@ -42,9 +42,6 @@ export function forIn(obj, handler, childrenKey = 'children') {
   return obj
 }
 function _changeParent(item, parent, childrenKey = 'children', parentKey = 'parent') {
-  if (item[parentKey] === parent) {
-    return
-  }
   // remove item from original list
   if (item[parentKey]) {
     arrayRemove(item[parentKey][childrenKey], item)
@@ -61,9 +58,14 @@ export function insertBefore(item, target, childrenKey = 'children', parentKey =
     return
   }
   const sibilings = target[parentKey][childrenKey]
-  const index = sibilings.indexOf(target)
+  let index = sibilings.indexOf(target)
   if (sibilings[index - 1] !== item) {
-    _changeParent(item, target[parentKey])
+    if (item[parentKey] === target[parentKey]) {
+      arrayRemove(sibilings, item)
+      index = sibilings.indexOf(target)
+    } else {
+      _changeParent(item, target[parentKey])
+    }
     sibilings.splice(index, 0, item)
   }
 }
@@ -73,9 +75,14 @@ export function insertAfter(item, target, childrenKey = 'children', parentKey = 
   }
   const targetParent = target[parentKey]
   const sibilings = targetParent[childrenKey]
-  const index = sibilings.indexOf(target)
+  let index = sibilings.indexOf(target)
   if (sibilings[index + 1] !== item) {
-    _changeParent(item, target[parentKey])
+    if (item[parentKey] === target[parentKey]) {
+      arrayRemove(sibilings, item)
+      index = sibilings.indexOf(target)
+    } else {
+      _changeParent(item, target[parentKey])
+    }
     sibilings.splice(index + 1, 0, item)
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "tree-helper",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "dist/tree-helper.common.js",
   "module": "dist/tree-helper.esm.js",

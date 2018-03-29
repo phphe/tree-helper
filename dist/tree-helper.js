@@ -1,5 +1,5 @@
 /*!
- * tree-helper v1.0.3
+ * tree-helper v1.0.4
  * phphe <phphe@outlook.com> (https://github.com/phphe)
  * https://github.com/phphe/tree-helper.git
  * Released under the MIT License.
@@ -336,9 +336,6 @@ function _changeParent(item, parent) {
   var childrenKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'children';
   var parentKey = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'parent';
 
-  if (item[parentKey] === parent) {
-    return;
-  }
   // remove item from original list
   if (item[parentKey]) {
     arrayRemove(item[parentKey][childrenKey], item);
@@ -366,7 +363,12 @@ function insertBefore(item, target) {
   var sibilings = target[parentKey][childrenKey];
   var index = sibilings.indexOf(target);
   if (sibilings[index - 1] !== item) {
-    _changeParent(item, target[parentKey]);
+    if (item[parentKey] === target[parentKey]) {
+      arrayRemove(sibilings, item);
+      index = sibilings.indexOf(target);
+    } else {
+      _changeParent(item, target[parentKey]);
+    }
     sibilings.splice(index, 0, item);
   }
 }
@@ -381,7 +383,12 @@ function insertAfter(item, target) {
   var sibilings = targetParent[childrenKey];
   var index = sibilings.indexOf(target);
   if (sibilings[index + 1] !== item) {
-    _changeParent(item, target[parentKey]);
+    if (item[parentKey] === target[parentKey]) {
+      arrayRemove(sibilings, item);
+      index = sibilings.indexOf(target);
+    } else {
+      _changeParent(item, target[parentKey]);
+    }
     sibilings.splice(index + 1, 0, item);
   }
 }
