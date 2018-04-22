@@ -1,8 +1,8 @@
-import { isArray, arrayRemove } from 'helper-js'
+import * as hp from 'helper-js'
 
 export function clone(obj, childrenKey = 'children') {
   let cloned
-  if (isArray(obj)) {
+  if (hp.isArray(obj)) {
     cloned = obj.map(item => clone(item))
   } else {
     cloned = Object.assign({}, obj)
@@ -13,9 +13,11 @@ export function clone(obj, childrenKey = 'children') {
   return cloned
 }
 
+// 旧版深度优先遍历
+// old Depth-First-Search
 export function forIn(obj, handler, childrenKey = 'children') {
   var rootChildren, rootParent, func
-  if (isArray(obj)) {
+  if (hp.isArray(obj)) {
     rootChildren = obj
     rootParent = null
   } else {
@@ -41,10 +43,82 @@ export function forIn(obj, handler, childrenKey = 'children') {
   }
   return obj
 }
+
+// 深度优先遍历
+// Depth-First-Search
+export function depthFirstSearch(obj, handler, childrenKey = 'children', reverse) {
+  const rootChildren = hp.isArray(obj) ? obj : [obj]
+  //
+  const StopException = () => {}
+  const func = (children, parent) => {
+    if (reverse) {
+      children = children.slice()
+      children.reverse()
+    }
+    const len = children.length
+    for (let i = 0; i < len; i++) {
+      const item = children[i]
+      const r = handler(item, i, parent)
+      if (r === false) {
+        // stop
+        throw new StopException()
+      } else if (r === 'skip children') {
+        continue
+      } else if (r === 'skip siblings') {
+        break
+      }
+      if (item[childrenKey] != null) {
+        func(item[childrenKey], item)
+      }
+    }
+  }
+  try {
+    func(rootChildren)
+  } catch (e) {
+    if (e instanceof StopException) {
+     // stop
+   } else {
+     throw e
+   }
+  }
+}
+
+// 广度优先遍历
+// Breadth-First-Search
+export function breadthFirstSearch(obj, handler, childrenKey = 'children', reverse) {
+  const rootChildren = hp.isArray(obj) ? obj : [obj]
+  //
+  let stack = rootChildren.map((v, i) => ({item: v, index: i}))
+  if (reverse) {
+    stack.reverse()
+  }
+  while (stack.length) {
+    const {item, index, parent} = stack.shift()
+    const r = handler(item, index, parent)
+    if (r === false) {
+      // stop
+      return
+    } else if (r === 'skip children') {
+      continue
+    } else if (r === 'skip siblings') {
+      stack = stack.filter(v => v.parent !== parent)
+    }
+    if (item.children) {
+      let children = item.children
+      if (reverse) {
+        children = children.slice()
+        children.reverse()
+      }
+      const pushStack = children.map((v, i) => ({item: v, index: i, parent: item}))
+      stack.push(...pushStack)
+    }
+  }
+}
+
 function _changeParent(item, parent, childrenKey = 'children', parentKey = 'parent') {
   // remove item from original list
   if (item[parentKey]) {
-    arrayRemove(item[parentKey][childrenKey], item)
+    hp.arrayRemove(item[parentKey][childrenKey], item)
   }
   item[parentKey] = parent
 }
@@ -57,16 +131,16 @@ export function insertBefore(item, target, childrenKey = 'children', parentKey =
   if (item === target) {
     return
   }
-  const sibilings = target[parentKey][childrenKey]
-  let index = sibilings.indexOf(target)
-  if (sibilings[index - 1] !== item) {
+  const siblings = target[parentKey][childrenKey]
+  let index = siblings.indexOf(target)
+  if (siblings[index - 1] !== item) {
     if (item[parentKey] === target[parentKey]) {
-      arrayRemove(sibilings, item)
-      index = sibilings.indexOf(target)
+      hp.arrayRemove(siblings, item)
+      index = siblings.indexOf(target)
     } else {
       _changeParent(item, target[parentKey])
     }
-    sibilings.splice(index, 0, item)
+    siblings.splice(index, 0, item)
   }
 }
 export function insertAfter(item, target, childrenKey = 'children', parentKey = 'parent') {
@@ -74,16 +148,16 @@ export function insertAfter(item, target, childrenKey = 'children', parentKey = 
     return
   }
   const targetParent = target[parentKey]
-  const sibilings = targetParent[childrenKey]
-  let index = sibilings.indexOf(target)
-  if (sibilings[index + 1] !== item) {
+  const siblings = targetParent[childrenKey]
+  let index = siblings.indexOf(target)
+  if (siblings[index + 1] !== item) {
     if (item[parentKey] === target[parentKey]) {
-      arrayRemove(sibilings, item)
-      index = sibilings.indexOf(target)
+      hp.arrayRemove(siblings, item)
+      index = siblings.indexOf(target)
     } else {
       _changeParent(item, target[parentKey])
     }
-    sibilings.splice(index + 1, 0, item)
+    siblings.splice(index + 1, 0, item)
   }
 }
 export function prependTo(item, target, childrenKey = 'children', parentKey = 'parent') {
